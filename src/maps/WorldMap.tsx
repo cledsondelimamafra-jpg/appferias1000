@@ -2,7 +2,6 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
-// Corrige ícone padrão do Leaflet (problema comum no Vite)
 import iconUrl from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 
@@ -15,10 +14,14 @@ const DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// Coordenadas (Diamantina - MG como exemplo)
-const position: [number, number] = [-18.2413, -43.6012];
+type Props = {
+  location?: [number, number];
+};
 
-export default function WorldMap() {
+export default function WorldMap({ location }: Props) {
+  const position: [number, number] =
+    location ?? [-18.2413, -43.6012]; // fallback Diamantina - MG
+
   return (
     <div style={{ height: "500px", width: "100%", borderRadius: "12px" }}>
       <MapContainer
@@ -27,14 +30,14 @@ export default function WorldMap() {
         style={{ height: "100%", width: "100%", borderRadius: "12px" }}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+          attribution='&copy; OpenStreetMap contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
         <Marker position={position}>
           <Popup>
-            Diamantina - MG 🇧🇷 <br />
-            Seu sistema de turismo aqui ✈️
+            Você está aqui 📍 <br />
+            Sistema de Turismo Inteligente ✈️
           </Popup>
         </Marker>
       </MapContainer>
