@@ -1,185 +1,43 @@
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  useMap
-} from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
-import { useEffect, useState } from 'react'
+// Corrige ícone padrão do Leaflet (problema comum no Vite)
+import iconUrl from "leaflet/dist/images/marker-icon.png";
+import iconShadow from "leaflet/dist/images/marker-shadow.png";
 
-import { getWeather } from '../services/weather'
+const DefaultIcon = L.icon({
+  iconUrl,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
 
-import { getTourism } from '../services/tourism'
+L.Marker.prototype.options.icon = DefaultIcon;
 
-function ChangeMap({ position }: any) {
+// Coordenadas (Diamantina - MG como exemplo)
+const position: [number, number] = [-18.2413, -43.6012];
 
-  const map = useMap()
-
-  useEffect(() => {
-
-    if (position) {
-
-      map.flyTo(position, 10, {
-        duration: 2
-      })
-    }
-
-  }, [position])
-
-  return null
-}
-
-export default function WorldMap({
-  location
-}: any) {
-
-  const [weather, setWeather] = useState<any>(null)
-
-  const [tourism, setTourism] = useState<any[]>([])
-
-  const position = location
-    ? [location.lat, location.lon]
-    : [-14.235, -51.9253]
-
-  useEffect(() => {
-
-    async function loadData() {
-
-      if (!location) return
-
-      try {
-
-        const weatherData =
-          await getWeather(
-            location.lat,
-            location.lon
-          )
-
-        const tourismData =
-          await getTourism(
-            location.lat,
-            location.lon
-          )
-
-        setWeather(weatherData)
-
-        setTourism(tourismData)
-
-      } catch (error) {
-
-        console.log(error)
-      }
-    }
-
-    loadData()
-
-  }, [location])
-
+export default function WorldMap() {
   return (
-
-    <MapContainer
-      center={[-14.235, -51.9253]}
-      zoom={4}
-      style={{
-        height: '500px',
-        width: '100%',
-        borderRadius: '20px'
-      }}
-    >
-
-      <TileLayer
-        attribution='&copy; OpenStreetMap'
-        url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-      />
-
-      <ChangeMap position={position} />
-
-      {location && (
+    <div style={{ height: "500px", width: "100%", borderRadius: "12px" }}>
+      <MapContainer
+        center={position}
+        zoom={13}
+        style={{ height: "100%", width: "100%", borderRadius: "12px" }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
 
         <Marker position={position}>
-
           <Popup>
-
-            <div
-              style={{
-                minWidth: '250px'
-              }}
-            >
-
-              <h2
-                style={{
-                  fontSize: '20px',
-                  fontWeight: 'bold',
-                  marginBottom: '10px'
-                }}
-              >
-                {weather?.name}
-              </h2>
-
-              <p>
-                🌡️ Temperatura:
-                {' '}
-                {weather?.main?.temp} °C
-              </p>
-
-              <p>
-                ☁️ Clima:
-                {' '}
-                {weather?.weather?.[0]?.description}
-              </p>
-
-              <p>
-                🌍 País:
-                {' '}
-                {weather?.sys?.country}
-              </p>
-
-              <hr
-                style={{
-                  marginTop: '10px',
-                  marginBottom: '10px'
-                }}
-              />
-
-              <h3
-                style={{
-                  fontWeight: 'bold',
-                  marginBottom: '8px'
-                }}
-              >
-                🏖️ Pontos turísticos
-              </h3>
-
-              <ul
-                style={{
-                  paddingLeft: '15px'
-                }}
-              >
-
-                {tourism.map((item, index) => (
-
-                  <li
-                    key={index}
-                    style={{
-                      marginBottom: '5px'
-                    }}
-                  >
-                    • {item.name || 'Local turístico'}
-                  </li>
-
-                ))}
-
-              </ul>
-
-            </div>
-
+            Diamantina - MG 🇧🇷 <br />
+            Seu sistema de turismo aqui ✈️
           </Popup>
-
         </Marker>
-
-      )}
-
-    </MapContainer>
-  )
+      </MapContainer>
+    </div>
+  );
 }
