@@ -1,12 +1,18 @@
-import axios from 'axios'
-
-const API_KEY = 'acc3120a7a5cdbff08e94710972ada23'
-
 export async function getWeather(lat: number, lon: number) {
+  try {
+    const res = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`
+    );
 
-  const response = await axios.get(
-    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=pt_br`
-  )
+    const data = await res.json();
 
-  return response.data
+    if (!data?.current_weather) return null;
+
+    return {
+      temp: data.current_weather.temperature,
+      wind: data.current_weather.windspeed,
+    };
+  } catch (err) {
+    return null;
+  }
 }
